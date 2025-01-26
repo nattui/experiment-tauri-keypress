@@ -1,58 +1,28 @@
-import { useState } from "react"
-import reactLogo from "./assets/react.svg"
-import { invoke } from "@tauri-apps/api/core"
+import { useEffect } from "react"
 import "./App.css"
 
 export default function App() {
-  const [greetMsg, setGreetMsg] = useState("")
-  const [name, setName] = useState("")
-  const [audio] = useState(new Audio("/sound.wav"))
+  useEffect(() => {
+    const handleKeyPress = () => {
+      // Create and play a new audio instance for each keypress
+      const audio = new Audio("/sound.wav")
+      audio.play()
+      // Clean up the audio element after it finishes playing
+      audio.addEventListener("ended", () => {
+        audio.remove()
+      })
+    }
 
-  async function greet() {
-    // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
-    setGreetMsg(await invoke("greet", { name }))
-  }
+    window.addEventListener("keydown", handleKeyPress)
 
-  const playTypingSound = () => {
-    audio.currentTime = 0
-    audio.play()
-  }
+    return () => {
+      window.removeEventListener("keydown", handleKeyPress)
+    }
+  }, [])
 
   return (
     <main className="container">
       <h1>Hello</h1>
-
-      <div className="row">
-        <a href="https://vitejs.dev" target="_blank">
-          <img src="/vite.svg" className="logo vite" alt="Vite logo" />
-        </a>
-        <a href="https://tauri.app" target="_blank">
-          <img src="/tauri.svg" className="logo tauri" alt="Tauri logo" />
-        </a>
-        <a href="https://reactjs.org" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <p>Click on the Tauri, Vite, and React logos to learn more.</p>
-
-      <form
-        className="row"
-        onSubmit={(e) => {
-          e.preventDefault()
-          greet()
-        }}
-      >
-        <input
-          id="greet-input"
-          onChange={(e) => {
-            setName(e.currentTarget.value)
-            playTypingSound()
-          }}
-          placeholder="Enter a name..."
-        />
-        <button type="submit">Greet</button>
-      </form>
-      <p>{greetMsg}</p>
     </main>
   )
 }
