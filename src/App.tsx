@@ -1,22 +1,17 @@
 import { useEffect } from "react"
+import { invoke } from "@tauri-apps/api/core"
 import "./App.css"
 
 export default function App() {
   useEffect(() => {
-    const handleKeyPress = () => {
-      // Create and play a new audio instance for each keypress
-      const audio = new Audio("/sound.wav")
-      audio.play()
-      // Clean up the audio element after it finishes playing
-      audio.addEventListener("ended", () => {
-        audio.remove()
-      })
+    async function handleKeyPress() {
+      await invoke("play_sound")
     }
 
-    window.addEventListener("keydown", handleKeyPress)
+    window.addEventListener("keypress", handleKeyPress)
 
     return () => {
-      window.removeEventListener("keydown", handleKeyPress)
+      window.removeEventListener("keypress", handleKeyPress)
     }
   }, [])
 
