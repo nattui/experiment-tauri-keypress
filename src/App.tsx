@@ -3,18 +3,24 @@ import reactLogo from "./assets/react.svg"
 import { invoke } from "@tauri-apps/api/core"
 import "./App.css"
 
-function App() {
+export default function App() {
   const [greetMsg, setGreetMsg] = useState("")
   const [name, setName] = useState("")
+  const [audio] = useState(new Audio("/sound.wav"))
 
   async function greet() {
     // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
     setGreetMsg(await invoke("greet", { name }))
   }
 
+  const playTypingSound = () => {
+    audio.currentTime = 0
+    audio.play()
+  }
+
   return (
     <main className="container">
-      <h1>Welcome to Tauri + React</h1>
+      <h1>Hello</h1>
 
       <div className="row">
         <a href="https://vitejs.dev" target="_blank">
@@ -38,7 +44,10 @@ function App() {
       >
         <input
           id="greet-input"
-          onChange={(e) => setName(e.currentTarget.value)}
+          onChange={(e) => {
+            setName(e.currentTarget.value)
+            playTypingSound()
+          }}
           placeholder="Enter a name..."
         />
         <button type="submit">Greet</button>
@@ -47,5 +56,3 @@ function App() {
     </main>
   )
 }
-
-export default App
